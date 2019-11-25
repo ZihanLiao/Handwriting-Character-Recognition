@@ -35,6 +35,7 @@ test_dataset = torchvision.datasets.MNIST(root=DATA_PATH, train=False, transform
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
+
 # Model
 class ConvNet(nn.Module):
     def __init__(self):
@@ -59,6 +60,7 @@ class ConvNet(nn.Module):
         out = self.fc1(out)
         out = self.fc2(out)
         return out
+
 
 #Train the model
 model = ConvNet()

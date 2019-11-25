@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pickle
 import numpy as np
 
-
+# Define loading function
 def load_pkl(fname):
     with open(fname, 'rb') as f:
         return pickle.load(f)

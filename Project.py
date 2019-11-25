@@ -1,7 +1,9 @@
 import numpy as np
 import torch
 import torchvision
-import torchvision.transforms as transforms
+from torch import nn
+from torch.utils.data import DataLoader
+from torchvision.transforms import transforms
 
 #Read Me
 '''First up, we can see that the input images will be 28 x 28 pixel greyscale representations of digits. 
@@ -14,10 +16,6 @@ and a final 2 x 2 max pooling (stride = 2) down-sampling to produce a 7 x 7 outp
 
 
 # Hyperparameters
-from torch import nn
-from torch.utils.data import DataLoader
-from torchvision.transforms import transforms
-
 num_epochs = 5
 num_classes = 10
 batch_size = 100

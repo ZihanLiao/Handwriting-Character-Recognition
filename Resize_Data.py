@@ -19,7 +19,7 @@ labels = np.load('finalLabelsTrain.npy')
 
 
 def resize_data_image(data):
-    if len(data) != 50:
+    if len(data) != 50:  # # of row
         if len(data) < 50:
             if (50 - len(data)) % 2 != 0:
                 data = np.pad(data, [(((50 - len(data)) // 2) + 1, (50 - len(data)) // 2), (0, 0)], mode='constant')
@@ -29,7 +29,7 @@ def resize_data_image(data):
             for i in range(len(data)):
                 if i >= 50:
                     data = np.delete(data, 50, 0)
-    if len(data[0]) != 50:
+    if len(data[0]) != 50:  # # of column
         if len(data[0]) < 50:
             if (50 - len(data[0])) % 2 != 0:
                 data = np.pad(data, [(0, 0), (((50 - len(data[0])) // 2) + 1, (50 - len(data[0])) // 2)],

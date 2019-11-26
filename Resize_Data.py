@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
+from torchvision.transforms import transforms
+
 
 # Define loading function
 def load_pkl(fname):
@@ -50,5 +52,7 @@ for i in range(len(train_data)):
     if np.shape(resized_data[i]) != (50, 50):
         print("WRONG!")
 
-resized_data = np.array(resized_data)
+resized_data = np.array(resized_data).astype(int)
+trans = transforms.ToTensor()
 
+train_data_raw = trans(resized_data)

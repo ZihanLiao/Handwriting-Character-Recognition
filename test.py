@@ -60,9 +60,13 @@ for i in range(len(train_data)):
 
 
 
+
 # transform into array, then transform to tensor, get the train_data_raw
 resized_data = np.array(resized_data).astype(int)
 train_data_raw = torch.Tensor(resized_data)
+train_data_raw = train_data_raw.unsqueeze(1)
+print(train_data_raw[0].shape)
+
 
 
 # test 1
@@ -82,14 +86,14 @@ class ConvNet(nn.Module):
 
         self.layer1 = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=5, stride=1, padding=2),
-            nn.init.xavier_uniform(self.layer1.weight),  # initialize Weights of first layer----xavier_uniform
-            self.layer1.bias.data.fill_(0.01),  # initialize Bias
+            #nn.init.xavier_uniform(self.layer1.weight),  # initialize Weights of first layer----xavier_uniform
+            #self.layer1.bias.data.fill_(0.01),  # initialize Bias
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.layer2 = nn.Sequential(
             nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2),
-            nn.init.xavier_uniform(self.layer2.weight),  # initialize Weights of second layer
-            self.layer2.bias.data.fill_(0.01),  # Bias(not sure)
+            #nn.init.xavier_uniform(self.layer2.weight),  # initialize Weights of second layer
+            #self.layer2.bias.data.fill_(0.01),  # Bias(not sure)
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
 
@@ -112,11 +116,38 @@ class ConvNet(nn.Module):
         return out
 
 
-# Train the model
 model = ConvNet()
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+#Train loop
+# Train the model
+total_step = len(train_loader)
+loss_list = []
+acc_list = []
+for epoch in range(num_epochs): #epoch is 1
+    for i, (images, labels) in enumerate(train_loader):
+        # Run the forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        loss_list.append(loss.item())
+
+        # Backprop and perform Adam optimisation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Track the accuracy
+        total = labels.size(0)
+        _, predicted = torch.max(outputs.data, 1)
+        correct = (predicted == labels).sum().item()
+        acc_list.append(correct / total)
+
+        if (i + 1) % 100 == 0:
+            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
+                  .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
+                          (correct / total) * 100))
 
 
 

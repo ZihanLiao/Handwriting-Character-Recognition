@@ -52,7 +52,10 @@ for i in range(len(train_data)):
     if np.shape(resized_data[i]) != (50, 50):
         print("WRONG!")
 
+# transform into array, then transform to tensor, get the train_data_raw
 resized_data = np.array(resized_data).astype(int)
 trans = transforms.ToTensor()
-
 train_data_raw = trans(resized_data)
+
+
+

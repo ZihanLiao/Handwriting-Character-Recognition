@@ -8,6 +8,7 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 from torchvision import transforms
 import torch.nn as nn
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def load_pkl(fname):
 	with open(fname,'rb') as f:
@@ -73,17 +74,24 @@ for i in range(len(resized_data)):
 print(type(labels))
 print(len(labels))
 
-train_loader = DataLoader(dataset=train_dataset, batch_size=400, shuffle=True)
+train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 
-for i, (images, labels) in enumerate(train_loader):
+train_loader = DataLoader(dataset=train_loader, batch_size=576, shuffle=True)
+test_loader = DataLoader(dataset=test_loader, batch_size=640, shuffle=False)
+
+
+
+for i, (images, labels) in enumerate(test_loader):
         if i == 1:
             break
         print(images.shape)
         print(labels.shape)
 
+
+
+
 num_epochs = 1
 num_classes = 8
-batch_size = 400
 learning_rate = 0.001
 
 
@@ -101,8 +109,8 @@ class ConvNet(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(12 * 12 * 64, 1000)
-        self.fc2 = nn.Linear(1000, 8)
+        self.fc1 = nn.Linear(12 * 12 * 64, 3000)
+        self.fc2 = nn.Linear(3000, 8)
 # Forward
 
     def forward(self, x):
@@ -141,16 +149,18 @@ for epoch in range(num_epochs): #epoch is 1
         # Track the accuracy
         total = labels.size(0)
         _, predicted = torch.max(outputs.data, 1)
-        correct = (predicted == labels).sum().item()
+        correct = (predicted.long() == labels.long()).sum().item()
         acc_list.append(correct / total)
 
-        if (i + 1) % 4 == 0:
+        if (i + 1) % 5 == 0:
             print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
                   .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
                           (correct / total) * 100))
 
+
+
 # Test the model
-model.eval()
+model.eval() 
 with torch.no_grad():
     correct = 0
     total = 0
@@ -158,4 +168,5 @@ with torch.no_grad():
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+        correct += (predicted.long() == labels.long()).sum().item()
+    print("accuracy: "+ str(correct/total))

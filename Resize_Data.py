@@ -59,9 +59,12 @@ resized_data = torch.Tensor(resized_data)
 print(type(resized_data))
 print(resized_data.shape)
 
-resized_data = torch.unsqueeze(resized_data, dim=1)
+resized_data = torch.unsqueeze(resized_data, dim=1)  # add one dimension--1
 print(resized_data.shape)
 labels = torch.Tensor(labels)
+
+for i in range(len(labels)):
+    labels[i] = labels[i] - 1
 
 train_dataset = []
 for i in range(len(resized_data)):
@@ -70,12 +73,78 @@ for i in range(len(resized_data)):
 print(type(labels))
 print(len(labels))
 
-
 train_loader = DataLoader(dataset=train_dataset, batch_size=400, shuffle=True)
-
 
 for i, (images, labels) in enumerate(train_loader):
         if i == 1:
             break
         print(images.shape)
         print(labels.shape)
+
+num_epochs = 1
+num_classes = 8
+batch_size = 400
+learning_rate = 0.001
+
+
+
+# Model
+class ConvNet(nn.Module):
+    def __init__(self):
+        super(ConvNet, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.drop_out = nn.Dropout()
+        self.fc1 = nn.Linear(12 * 12 * 64, 1000)
+        self.fc2 = nn.Linear(1000, 8)
+# Forward
+
+    def forward(self, x):
+        out = self.layer1(x)
+        out = self.layer2(out)
+        out = out.reshape(out.size(0), -1)
+        out = self.drop_out(out)
+        out = self.fc1(out)
+        out = self.fc2(out)
+        return out
+
+
+#Train the model
+model = ConvNet()
+# Loss and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+#Train loop
+# Train the model
+total_step = len(train_loader)
+loss_list = []
+acc_list = []
+for epoch in range(num_epochs): #epoch is 1
+    for i, (images, labels) in enumerate(train_loader):
+        # Run the forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels.long())
+        loss_list.append(loss.item())
+
+        # Backprop and perform Adam optimisation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Track the accuracy
+        total = labels.size(0)
+        _, predicted = torch.max(outputs.data, 1)
+        correct = (predicted == labels).sum().item()
+        acc_list.append(correct / total)
+
+        '''if (i + 1) % 100 == 0:
+            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
+                  .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
+                          (correct / total) * 100))'''

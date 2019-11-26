@@ -69,7 +69,7 @@ batch_size = 100
 learning_rate = 0.001
 
 # cross validation
-train_loader = DataLoader(dataset=train_data_raw, batch_size=batch_size, shuffle=True)
+train_loader = DataLoader(dataset=train_data_raw, batch_size=batch_size, shuffle=True)  # shuffle or not
 test_loader = DataLoader(dataset=train_data_raw, batch_size=batch_size, shuffle=False)
 
 # Model

@@ -59,7 +59,7 @@ resized_data = torch.Tensor(resized_data)
 print(type(resized_data))
 print(resized_data.shape)
 
-resized_data = torch.unsqueeze(resized_data,dim=1)
+resized_data = torch.unsqueeze(resized_data, dim=1)
 print(resized_data.shape)
 labels = torch.Tensor(labels)
 

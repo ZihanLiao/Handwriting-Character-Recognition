@@ -4,6 +4,9 @@ import torchvision
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
+import matplotlib.pyplot as plt
+from bokeh.models import LinearAxis, Range1d
+from bokeh.io import show
 
 #Read Me
 '''First up, we can see that the input images will be 28 x 28 pixel greyscale representations of digits. 
@@ -14,9 +17,12 @@ and a final 2 x 2 max pooling (stride = 2) down-sampling to produce a 7 x 7 outp
 
 '''W_{out} = \frac{(W_{in} – F + 2P)}{S} + 1'''
 
+'''The training data set contains 60000 examples, and test data set contains 10000 examples'''
+'''train-image-idx-ubyte    28-by-28   pixels are organized row-wise '''
+'''Pixel values are 0 to 255. 0 means background (white), 255 means foreground (black)'''
 
 # Hyperparameters
-num_epochs = 5
+num_epochs = 1
 num_classes = 10
 batch_size = 100
 learning_rate = 0.001
@@ -50,6 +56,7 @@ class ConvNet(nn.Module):
         self.fc1 = nn.Linear(7 * 7 * 64, 1000)
         self.fc2 = nn.Linear(1000, 10)
 # Forward
+
     def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
@@ -110,3 +117,9 @@ with torch.no_grad():
 
 # Save the model and plot
 torch.save(model.state_dict(), MODEL_STORE_PATH + 'conv_net_model.ckpt')
+p = plt.figure(y_axis_label='Loss', width=850, y_range=(0, 1), title='PyTorch ConvNet results')
+p.extra_y_ranges = {'Accuracy': Range1d(start=0, end=100)}
+p.add_layout(LinearAxis(y_range_name='Accuracy', axis_label='Accuracy (%)'), 'right')
+p.line(np.arange(len(loss_list)), loss_list)
+p.line(np.arange(len(loss_list)), np.array(acc_list) * 100, y_range_name='Accuracy', color='red')
+show(p)

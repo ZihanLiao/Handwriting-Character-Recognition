@@ -49,3 +49,6 @@ for i in range(len(train_data)):
     resized_data.append(resize_data_image(train_data[i]))
     if np.shape(resized_data[i]) != (50, 50):
         print("WRONG!")
+
+resized_data = np.array(resized_data)
+

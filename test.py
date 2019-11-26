@@ -56,10 +56,13 @@ for i in range(len(train_data)):
     if np.shape(resized_data[i]) != (50, 50):
         print("WRONG!")
 
+
+
+
+
 # transform into array, then transform to tensor, get the train_data_raw
 resized_data = np.array(resized_data).astype(int)
-trans = transforms.ToTensor()
-train_data_raw = trans(resized_data)
+train_data_raw = torch.Tensor(resized_data)
 
 
 # test 1
@@ -91,15 +94,19 @@ class ConvNet(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2))
 
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(7 * 7 * 64, 1000)
+        self.fc1 = nn.Linear(12 * 12 * 64, 1000)
         self.fc2 = nn.Linear(1000, 10)
 # Forward
 
     def forward(self, x):
+
+        # layer1 and layer2
         out = self.layer1(x)
         out = self.layer2(out)
-        out = out.reshape(out.size(0), -1)
-        out = self.drop_out(out)
+
+        # neuron
+        out = out.reshape(out.size(0), -1)  # flatten into x-by-1 matrix
+        out = self.drop_out(out)  # drop out in the first layer neural network
         out = self.fc1(out)
         out = self.fc2(out)
         return out
@@ -110,3 +117,6 @@ model = ConvNet()
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+
+

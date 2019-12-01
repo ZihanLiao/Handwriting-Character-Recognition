@@ -89,7 +89,7 @@ for i in range(len(a_b_dataset)):
 
 print("The length of a_b_test: " + str(len(a_b_test)))
 
-a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =796, shuffle = False)
+a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =len(a_b_test), shuffle = False)
 
 num_epochs = 1
 num_classes = 8

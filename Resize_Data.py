@@ -1,12 +1,8 @@
 #! /bin/env python3
-import matplotlib.pyplot as plt
 import pickle
 import numpy as np
 import torch
-import torchvision
-from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
-from torchvision import transforms
 import torch.nn as nn
 from sklearn.model_selection import train_test_split, cross_val_score
 
@@ -122,10 +118,10 @@ train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 
 train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
 #  test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
-a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =796, shuffle = False)
+a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =len(a_b_test), shuffle = False)
 
 
-num_epochs = 1
+num_epochs = 25
 num_classes = 8
 learning_rate = 0.0005
 

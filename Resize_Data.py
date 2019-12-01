@@ -164,9 +164,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 total_step = len(train_loader)
 loss_list = []
 acc_list = []
-for epoch in range(num_epochs): #epoch is 1
+for epoch in range(num_epochs): #epoch
     for i, (images, labels) in enumerate(train_loader):
-        # Run the forward pass
+        # Run the forward
         outputs = model(images)
         loss = criterion(outputs, labels.long())
         loss_list.append(loss.item())

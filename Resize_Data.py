@@ -59,6 +59,7 @@ delete_data_list = [980,981,982,983,984,985,985,987,988,989,
                     3840,3850,3851,3852,3863,3856,3857,3858,3859,3860,3862,
                     3864,3865,3866,3870,3871,3872,3873,3875,3876,3877,3878,3879,
                     3883,3884,3885,3889,3890,3891,3894,3895]
+
 #Delete those unclear image from dataset and corresponding labels
 i=0 #loop counter
 length = len(delete_data_list)  #list length 
@@ -72,11 +73,14 @@ for i in range(length):
 print(len(resized_data))
 print(len(labels))
 
+for i in range(len(labels)):
+    labels[i] = labels[i] - 1
+
 #Extract the a and b dataset
 a_b_dataset = []
 a_b_labels = []
 for i in range(len(labels)):
-    if labels[i]== 1 or labels[i] == 2:
+    if labels[i]== 0 or labels[i] == 1:
         a_b_dataset.append(resized_data[i])
         a_b_labels.append(labels[i])
 
@@ -99,11 +103,10 @@ for k in range(60,64):
 '''
 
 resized_data = torch.unsqueeze(resized_data, dim=1)  # add one dimension--1
+a_b_dataset = torch.unsqueeze(a_b_dataset, dim=1)  # add one dimension--1
 print(resized_data.shape)
 
 
-for i in range(len(labels)):
-    labels[i] = labels[i] - 1
 
 train_dataset = []
 for i in range(len(resized_data)):
@@ -118,22 +121,13 @@ print("The length of a_b_test: " + str(len(a_b_test)))
 train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 
 train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
-#test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
-a_b_test_loader = DataLoader(dataset = a_b_test, batch_size = 1592, shuffle = False)
+#  test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
+a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =796, shuffle = False)
 
 
-for i, (images, labels) in enumerate(test_loader):
-        if i == 1:
-            break
-        print(images.shape)
-        print(labels.shape)
-
-
-
-
-num_epochs = 5
+num_epochs = 1
 num_classes = 8
-learning_rate = 0.001
+learning_rate = 0.0005
 
 
 
@@ -142,16 +136,17 @@ class ConvNet(nn.Module):
     def __init__(self):
         super(ConvNet, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(1, 64, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.layer2 = nn.Sequential(
-            nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(64, 128, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(12 * 12 * 64, 1000)
+        self.fc1 = nn.Linear(12 * 12 * 128, 1000)
         self.fc2 = nn.Linear(1000, 8)
+
 # Forward
 
     def forward(self, x):
@@ -164,8 +159,16 @@ class ConvNet(nn.Module):
         return out
 
 
+
+
 #Train the model
 model = ConvNet()
+
+torch.save(model.layer1.state_dict(), 'net_params_layer1.pkl')
+torch.save(model.layer2.state_dict(), 'net_params_layer2.pkl')
+torch.save(model.fc1.state_dict(), 'net_params_linear1.pkl')
+torch.save(model.fc2.state_dict(), 'net_params_linear2.pkl')
+
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -222,3 +225,6 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted.long() == labels.long()).sum().item()
     print("accuracy: "+ str(correct/total))
+
+
+

@@ -18,12 +18,12 @@ def save_pkl(fname,obj):
 	with open(fname,'wb') as f:
 		pickle.dump(obj,f)
 
-train_data = load_pkl('train_data.pkl')
+train_data = load_pkl('train_data.pkl')  
 
 labels = np.load('finalLabelsTrain.npy')
 
 
-def resize_data_image(data):
+def resize_data_image(data):    
 	if(len(data) !=  48):
 		if(len(data)<48):
 			if((50-len(data))%2 != 0):
@@ -53,13 +53,13 @@ for i in range(len(train_data)):
 	if (np.shape(resized_data[i]) != (48,48)):
 		print("WRONG!")
 
-
+#Super unclear image index
 delete_data_list = [980,981,982,983,984,985,985,987,988,989,
                     941,942,943,930,931,933,1060,1054,1609,2140,3285,3330,
                     3840,3850,3851,3852,3863,3856,3857,3858,3859,3860,3862,
                     3864,3865,3866,3870,3871,3872,3873,3875,3876,3877,3878,3879,
                     3883,3884,3885,3889,3890,3891,3894,3895]
-
+#Delete those unclear image from dataset and corresponding labels
 i=0 #loop counter
 length = len(delete_data_list)  #list length 
 for i in range(length):
@@ -71,22 +71,36 @@ for i in range(length):
 # print list after removing given element
 print(len(resized_data))
 print(len(labels))
-labels = np.array(labels)
+
+#Extract the a and b dataset
+a_b_dataset = []
+a_b_labels = []
+for i in range(len(labels)):
+    if labels[i]== 1 or labels[i] == 2:
+        a_b_dataset.append(resized_data[i])
+        a_b_labels.append(labels[i])
+
+#Convert the tensor type for pytorch
+a_b_dataset = np.array(a_b_dataset)
+a_b_dataset = torch.Tensor(a_b_dataset)
+a_b_labels = np.array(a_b_labels)
+a_b_labels = torch.Tensor(a_b_labels)
 resized_data = np.array(resized_data)
 resized_data = torch.Tensor(resized_data)
-print(resized_data.shape)
-
-'''for k in range(8, 12):
-	plt.figure(k)
-	for i in range(k*100, (k+1)*100):
-		plt.subplot(10,10,i-k*100+1)
-		plt.imshow(resized_data[i], cmap='Greys')
-	plt.show()'''
-
+labels = np.array(labels)
+labels = torch.Tensor(labels)
+'''
+for k in range(60,64):
+    plt.figure(k)
+    for i in range(k*100, (k+1)*100):
+        plt.subplot(10,10,i-k*100+1)
+        plt.imshow(resized_data[i],cmap = 'Greys')
+    plt.show()
+'''
 
 resized_data = torch.unsqueeze(resized_data, dim=1)  # add one dimension--1
 print(resized_data.shape)
-labels = torch.Tensor(labels)
+
 
 for i in range(len(labels)):
     labels[i] = labels[i] - 1
@@ -95,17 +109,17 @@ train_dataset = []
 for i in range(len(resized_data)):
 	train_dataset.append((resized_data[i],labels[i]))
 
-print(type(labels))
-print(len(labels))
+a_b_test = []
+for i in range(len(a_b_dataset)):
+   a_b_test.append((a_b_dataset[i],a_b_labels[i]))
 
-
-
+print("The length of a_b_test: " + str(len(a_b_test)))
 
 train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 
 train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
-test_loader = DataLoader(dataset=test_loader, batch_size=634, shuffle=False)
-
+#test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
+a_b_test_loader = DataLoader(dataset = a_b_test, batch_size = 1592, shuffle = False)
 
 
 for i, (images, labels) in enumerate(test_loader):
@@ -117,9 +131,9 @@ for i, (images, labels) in enumerate(test_loader):
 
 
 
-num_epochs = 15
+num_epochs = 5
 num_classes = 8
-learning_rate = 0.0005
+learning_rate = 0.001
 
 
 
@@ -128,20 +142,16 @@ class ConvNet(nn.Module):
     def __init__(self):
         super(ConvNet, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(1, 32, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 128, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(12 * 12 * 128, 1000)
+        self.fc1 = nn.Linear(12 * 12 * 64, 1000)
         self.fc2 = nn.Linear(1000, 8)
-
-        '''for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')'''
 # Forward
 
     def forward(self, x):
@@ -152,6 +162,7 @@ class ConvNet(nn.Module):
         out = self.fc1(out)
         out = self.fc2(out)
         return out
+
 
 #Train the model
 model = ConvNet()
@@ -190,7 +201,8 @@ for epoch in range(num_epochs): #epoch is 1
 
 
 # Test the model
-model.eval() 
+model.eval()
+'''
 with torch.no_grad():
     correct = 0
     total = 0
@@ -200,6 +212,13 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted.long() == labels.long()).sum().item()
     print("accuracy: "+ str(correct/total))
-
-
-
+'''
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for images, labels in a_b_test_loader:
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted.long() == labels.long()).sum().item()
+    print("accuracy: "+ str(correct/total))

@@ -54,10 +54,26 @@ for i in range(len(train_data)):
 		print("WRONG!")
 
 
+delete_data_list = [980,981,982,983,984,985,985,987,988,989,
+                    941,942,943,930,931,933,1060,1054,1609,2140,3285,3330,
+                    3840,3850,3851,3852,3863,3856,3857,3858,3859,3860,3862,
+                    3864,3865,3866,3870,3871,3872,3873,3875,3876,3877,3878,3879,
+                    3883,3884,3885,3889,3890,3891,3894,3895]
 
+i=0 #loop counter
+length = len(delete_data_list)  #list length 
+for i in range(length):
+    resized_data.pop(delete_data_list[i])
+    labels = list(labels)
+    labels.pop(delete_data_list[i])
+    if i + 1 < len(delete_data_list):
+        delete_data_list[i+1] = delete_data_list[i+1] -1 
+# print list after removing given element
+print(len(resized_data))
+print(len(labels))
+labels = np.array(labels)
 resized_data = np.array(resized_data)
 resized_data = torch.Tensor(resized_data)
-print(type(resized_data))
 print(resized_data.shape)
 
 '''for k in range(8, 12):
@@ -87,8 +103,8 @@ print(len(labels))
 
 train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 
-train_loader = DataLoader(dataset=train_loader, batch_size=576, shuffle=True)
-test_loader = DataLoader(dataset=test_loader, batch_size=640, shuffle=False)
+train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
+test_loader = DataLoader(dataset=test_loader, batch_size=634, shuffle=False)
 
 
 

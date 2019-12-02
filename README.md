@@ -26,6 +26,6 @@ If you want to do "Hard test (All characters)",
 
     please comment the specific area where I defined in the code comment, 
     
-    And in line 147 change the 'a_b_test_loader' to 'test_loader'.  
+    And in line 148 change the 'a_b_test_loader' to 'test_loader'.  
 
 

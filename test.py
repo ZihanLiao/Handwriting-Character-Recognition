@@ -138,8 +138,9 @@ model.fc2.load_state_dict(torch.load('net_params_linear2.pkl'))
 
 # Test the model
 model.eval()
+'''======================================================================================='''
 'This part is used to extract a and b letter from dataset, if not going to use only a and b'
-'Please change the a_b_test_loader to test_loader'
+'Please change the a_b_test_loader to test_loader in line 148'
 '''======================================================================================='''
 with torch.no_grad():
     correct = 0
@@ -165,5 +166,5 @@ with torch.no_grad():
         print("The predicted labels are: "+ str(list(predicted)))
         print("The actual labels are:    "+ str(list(labels)))
     print("accuracy: "+ str(correct/total))
-'''======================================================================================='''
+
 

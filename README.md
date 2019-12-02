@@ -23,3 +23,6 @@ For example:
     
     replace 'labels = np.load('finalLabelsTrain.npy')' with 'labels = np.load('Labels file')'  
              
+If you want to do "Hard test", please firstly change the name of your testing file and labels in 18th and 19th line.  
+
+Then please do as the comment said

@@ -1,6 +1,8 @@
 # README
 project-01-easy-team created by GitHub Classroom  
 
+Train.py is used to train the model from training data.
+Test.py is used to predict labels from trained model.
 
 To test the model with new testing data.  
 

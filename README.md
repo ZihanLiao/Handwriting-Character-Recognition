@@ -1,8 +1,9 @@
 # README
 project-01-easy-team created by GitHub Classroom  
 
-Train.py is used to train the model from training data.
-Test.py is used to predict labels from trained model.
+Train.py is used to train the model from training data.  
+Test.py is used to predict labels from trained model.  
+"net_params_layer1.pkl" is the parameters in layer1 from model which has been traind
 
 To test the model with new testing data.  
 

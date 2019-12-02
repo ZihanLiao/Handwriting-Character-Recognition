@@ -160,10 +160,6 @@ class ConvNet(nn.Module):
 #Train the model
 model = ConvNet()
 
-torch.save(model.layer1.state_dict(), 'net_params_layer1.pkl')
-torch.save(model.layer2.state_dict(), 'net_params_layer2.pkl')
-torch.save(model.fc1.state_dict(), 'net_params_linear1.pkl')
-torch.save(model.fc2.state_dict(), 'net_params_linear2.pkl')
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -197,10 +193,12 @@ for epoch in range(num_epochs): #epoch
                   .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
                           (correct / total) * 100))
 
-
-
 # Test the model
 model.eval()
+torch.save(model.layer1.state_dict(), 'net_params_layer1.pkl')
+torch.save(model.layer2.state_dict(), 'net_params_layer2.pkl')
+torch.save(model.fc1.state_dict(), 'net_params_linear1.pkl')
+torch.save(model.fc2.state_dict(), 'net_params_linear2.pkl')
 '''
 with torch.no_grad():
     correct = 0

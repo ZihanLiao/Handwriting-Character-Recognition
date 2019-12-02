@@ -18,7 +18,7 @@ To test the model with new testing data.
                                          
 For example:  
   
-    replace 'labels = np.load('train_data.pkl')' with 'labels = np.load('Your testing data')'  
+    replace 'train_data = np.load('train_data.pkl')' with 'train_data = np.load('Your testing data')'  
 
     
     replace 'labels = np.load('finalLabelsTrain.npy')' with 'labels = np.load('Labels file')'  

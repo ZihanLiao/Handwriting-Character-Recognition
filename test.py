@@ -86,11 +86,6 @@ a_b_dataset = torch.unsqueeze(a_b_dataset, dim=1)  # add one dimension--1
 print(resized_data.shape)
 
 
-
-train_dataset = []
-for i in range(len(resized_data)):
-	train_dataset.append((resized_data[i],labels[i]))
-
 a_b_test = []
 for i in range(len(a_b_dataset)):
    a_b_test.append((a_b_dataset[i],a_b_labels[i]))
@@ -98,10 +93,9 @@ for i in range(len(a_b_dataset)):
 
 print("The length of a_b_test: " + str(len(a_b_test)))
 
-train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =len(a_b_test), shuffle = False)
-train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
-test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
+
+
 
 class ConvNet(nn.Module):
     def __init__(self):
@@ -139,17 +133,6 @@ model.fc2.load_state_dict(torch.load('net_params_linear2.pkl'))
 
 # Test the model
 model.eval()
-'''
-with torch.no_grad():
-    correct = 0
-    total = 0
-    for images, labels in test_loader:
-        outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted.long() == labels.long()).sum().item()
-    print("accuracy: "+ str(correct/total))
-'''
 with torch.no_grad():
     correct = 0
     total = 0

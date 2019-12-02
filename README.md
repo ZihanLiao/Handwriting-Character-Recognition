@@ -10,7 +10,7 @@ Test.py is used to predict labels from trained model.
 "net_params_linear1.pkl" is the parameters in linear1 from model which has been traind.  
 "net_params_linear2.pkl" is the parameters in linear2 from model which has been traind.
 
-To test the model with new testing data.  
+To test the model with new testing data. ("Easy test") 
 
     replace the file name in 18th line  
 

@@ -1,12 +1,8 @@
 #! /bin/env python3
-import matplotlib.pyplot as plt
 import pickle
 import numpy as np
 import torch
-import torchvision
-from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
-from torchvision import transforms
 import torch.nn as nn
 from sklearn.model_selection import train_test_split, cross_val_score
 
@@ -54,6 +50,8 @@ for i in range(len(train_data)):
 	if (np.shape(resized_data[i]) != (48,48)):
 		print("WRONG!")
 
+
+
 for i in range(len(labels)):
     labels[i] = labels[i] - 1
 
@@ -70,6 +68,8 @@ a_b_dataset = np.array(a_b_dataset)
 a_b_dataset = torch.Tensor(a_b_dataset)
 a_b_labels = np.array(a_b_labels)
 a_b_labels = torch.Tensor(a_b_labels)
+resized_data = np.array(resized_data)
+resized_data = torch.Tensor(resized_data)
 labels = np.array(labels)
 labels = torch.Tensor(labels)
 '''
@@ -81,19 +81,27 @@ for k in range(60,64):
     plt.show()
 '''
 
+resized_data = torch.unsqueeze(resized_data, dim=1)  # add one dimension--1
 a_b_dataset = torch.unsqueeze(a_b_dataset, dim=1)  # add one dimension--1
+print(resized_data.shape)
+
+
+
+train_dataset = []
+for i in range(len(resized_data)):
+	train_dataset.append((resized_data[i],labels[i]))
 
 a_b_test = []
 for i in range(len(a_b_dataset)):
    a_b_test.append((a_b_dataset[i],a_b_labels[i]))
 
+
 print("The length of a_b_test: " + str(len(a_b_test)))
 
+train_loader, test_loader = train_test_split(train_dataset, test_size = .1)
 a_b_test_loader = DataLoader(dataset = a_b_test, batch_size =len(a_b_test), shuffle = False)
-
-num_epochs = 1
-num_classes = 8
-learning_rate = 0.0005
+train_loader = DataLoader(dataset=train_loader, batch_size=572, shuffle=True)
+test_loader = DataLoader(dataset=test_loader, batch_size=1, shuffle=False)
 
 class ConvNet(nn.Module):
     def __init__(self):
@@ -150,4 +158,10 @@ with torch.no_grad():
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted.long() == labels.long()).sum().item()
+        for i in range(len(labels)):
+            if labels[i] == 0:
+                print("The label of a is predicted as: " + str(int(predicted[i])+1) + '\n')
+            if labels[i] == 1:
+                print("The label of b is predicted as: " + str(int(predicted[i])+1) + '\n')
     print("accuracy: "+ str(correct/total))
+

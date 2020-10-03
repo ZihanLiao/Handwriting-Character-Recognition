@@ -25,14 +25,14 @@ class S_NN(nn.Module):
         self.hidden = nn.Linear(args.n_input, args.hidden)
         self.output = nn.Linear(args.hidden, args.n_class)
 
-        self.LReLU = nn.LeakyReLU()
+        self.lrelu = nn.LeakyReLU()
         self.tanh = nn.Tanh()
         self.softmax = nn.Softmax(dim=1)
 
 
     def _forward(self, data):
         x = self.hidden(data)
-        x = self.LReLU(x)
+        x = self.lrelu(x)
         # x = self.tanh(x)
         x = self.output(x)
         x = self.softmax(x)
